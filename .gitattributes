@@ -1,0 +1,12 @@
+* text=auto eol=lf
+
+*.c    text eol=lf
+*.h    text eol=lf
+*.md   text eol=lf
+Makefile text eol=lf
+
+*.wav  binary
+*.mid  binary
+*.midi binary
+*.exe  binary
+*.o    binary
