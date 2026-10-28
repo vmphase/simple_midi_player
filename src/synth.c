@@ -9,6 +9,9 @@
 static const double PROMPT_WEIGHT = 0.75;
 static const double AFTER_WEIGHT = 0.25;
 
+static const double DETUNE_3_STRINGS[3] = {-0.0004, 0.0003, 0.0001};
+static const double DETUNE_2_STRINGS[2] = {-0.00025, 0.00025};
+
 /* Sums all partials of the note into `buf`. */
 static void add_partials(double *buf, long len, const Note *note,
                          const SynthParams *p, double f0, double t60) {
@@ -56,13 +59,43 @@ static void add_partials(double *buf, long len, const Note *note,
         double fast_decay = exp(-1.0 / (fast_tau * SAMPLE_RATE));
         double slow_decay = exp(-slow_rate / SAMPLE_RATE);
 
-        double fast = 1.0, slow = 1.0;
-        for (long i = 0; i < plen; i++) {
-            buf[i] += amp * sin(2.0 * PI * freq * i / SAMPLE_RATE) *
-                      (PROMPT_WEIGHT * fast + AFTER_WEIGHT * slow);
-            fast *= fast_decay;
-            slow *= slow_decay;
+        int strings = (n <= 6) ? 3 : (n <= 12 ? 2 : 1);
+        double string_amp = amp / strings;
+
+        for (int s = 0; s < strings; s++) {
+            double detune = strings == 3   ? DETUNE_3_STRINGS[s]
+                            : strings == 2 ? DETUNE_2_STRINGS[s]
+                                           : 0.0;
+            /* Sine oscillator by rotating a point on the unit circle: much
+             * cheaper than calling sin() for every sample. */
+            double w = 2.0 * PI * freq * (1.0 + detune) / SAMPLE_RATE;
+            double cos_w = cos(w), sin_w = sin(w);
+
+            double phase = PI / 2 + (frand() - 0.5) * 0.6;
+            double c = cos(phase), sn = sin(phase);
+            double fast = 1.0, slow = 1.0;
+
+            for (long i = 0; i < plen; i++) {
+                buf[i] += string_amp * sn *
+                          (PROMPT_WEIGHT * fast + AFTER_WEIGHT * slow);
+                double next_c = c * cos_w - sn * sin_w;
+                sn = sn * cos_w + c * sin_w;
+                c = next_c;
+                fast *= fast_decay;
+                slow *= slow_decay;
+            }
         }
+    }
+}
+
+static void add_hammer_knock(double *buf, long len, double vel) {
+    long knock_len = (long)(0.025 * SAMPLE_RATE);
+    if (knock_len > len)
+        knock_len = len;
+    double noise = 0;
+    for (long i = 0; i < knock_len; i++) {
+        noise += 0.12 * ((frand() * 2 - 1) - noise);
+        buf[i] += noise * 0.16 * vel * exp(-i / (0.004 * SAMPLE_RATE));
     }
 }
 
@@ -81,6 +114,7 @@ void synth_render_note(const Note *note, const SynthParams *p, float *left,
 
     double *buf = xcalloc((size_t)len, sizeof *buf);
     add_partials(buf, len, note, p, f0, t60);
+    add_hammer_knock(buf, len, note->vel);
 
     /* low notes slightly to the left, high ones to the right (equal power) */
     double pan = clampd((note->midi - 60) / 60.0 * 0.5, -0.5, 0.5);
