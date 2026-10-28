@@ -35,9 +35,10 @@ void wav_write(const char *path, const float *left, const float *right,
     put_le(f, 16, 4); /* size of the fmt chunk */
     put_le(f, 1, 2);  /* PCM */
     put_le(f, (uint32_t)channels, 2);
-    put_le(f, (uint32_t)(SAMPLE_RATE * 2), 4); /* bytes per second */
-    put_le(f, (uint32_t)(channels * 2), 2);    /* bytes per frame */
-    put_le(f, 16, 2);                          /* bits per sample */
+    put_le(f, SAMPLE_RATE, 4);
+    put_le(f, (uint32_t)(SAMPLE_RATE * channels * 2), 4); /* bytes per second */
+    put_le(f, (uint32_t)(channels * 2), 2);               /* bytes per frame */
+    put_le(f, 16, 2);                                     /* bits per sample */
     fwrite("data", 1, 4, f);
     put_le(f, data_size, 4);
 
