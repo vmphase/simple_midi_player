@@ -209,6 +209,8 @@ void midi_load(Score *score, const char *path) {
             score_pedal_event(score, t, ev->value >= 64);
             continue;
         }
+        if (ch == 9) /* drums */
+            continue;
 
         if (ev->type == EV_NOTE_ON && active[ch][key]) {
             /* same key struck again before release: end the old note */
