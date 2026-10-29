@@ -57,6 +57,23 @@ void score_scale_time(Score *s, double factor) {
     }
 }
 
+void score_trim(Score *s, double from, double to) {
+    size_t kept = 0;
+    for (size_t i = 0; i < s->notes.len; i++) {
+        Note n = s->notes.items[i];
+        if (n.start < from || (to > 0 && n.start >= to))
+            continue;
+        n.start -= from;
+        s->notes.items[kept++] = n;
+    }
+    s->notes.len = kept;
+
+    for (size_t i = 0; i < s->pedal.len; i++) {
+        s->pedal.items[i].down -= from;
+        s->pedal.items[i].up -= from;
+    }
+}
+
 void score_finish(Score *s) {
     s->length = 0;
     for (size_t i = 0; i < s->notes.len; i++) {
