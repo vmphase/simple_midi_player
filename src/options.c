@@ -16,6 +16,9 @@ static void print_usage(const char *prog) {
         "\n"
         "Output:\n"
         "  -o, --output FILE   output WAV file (default: input name + .wav)\n"
+        "  -p, --play          play the result when done\n"
+        "      --gm            play through the Windows GM synth, no WAV "
+        "(Windows only)\n"
         "      --tail SEC      silence kept after the last note (default "
         "6)\n"
         "      --gain X        peak level after normalizing, 0..1 (default "
@@ -109,8 +112,12 @@ bool options_parse(Options *opt, int argc, char **argv) {
             return false;
         } else if (!strcmp(a, "-o") || !strcmp(a, "--output")) {
             opt->output = next_arg(argc, argv, &i);
+        } else if (!strcmp(a, "-p") || !strcmp(a, "--play")) {
+            opt->play = true;
         } else if (!strcmp(a, "-q") || !strcmp(a, "--quiet")) {
             opt->quiet = true;
+        } else if (!strcmp(a, "--gm")) {
+            opt->gm = true;
         } else if (!strcmp(a, "--mono")) {
             opt->mono = true;
         } else if (!strcmp(a, "--info")) {
