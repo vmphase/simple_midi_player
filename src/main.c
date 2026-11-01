@@ -2,6 +2,7 @@
 #include "effects.h"
 #include "midi.h"
 #include "options.h"
+#include "player.h"
 #include "progress.h"
 #include "score.h"
 #include "synth.h"
@@ -100,6 +101,15 @@ int main(int argc, char **argv) {
         printf("Loaded %s: %lu notes, %.1f seconds\n", opt.input,
                (unsigned long)score.notes.len, score.length);
 
+    if (opt.gm) {
+        if (!opt.quiet)
+            printf("Playing through the Windows GM piano (no WAV is "
+                   "written)...\n");
+        bool ok = player_play_gm(&score);
+        score_free(&score);
+        return ok ? 0 : 1;
+    }
+
     long total = (long)((score.length + opt.tail) * SAMPLE_RATE);
     float *left = xcalloc((size_t)total, sizeof *left);
     float *right = xcalloc((size_t)total, sizeof *right);
@@ -138,5 +148,17 @@ int main(int argc, char **argv) {
     free(left);
     free(right);
     score_free(&score);
+
+    if (opt.play) {
+        if (!opt.quiet)
+            printf("Playing %s (Ctrl+C to stop)...\n", opt.output);
+        if (!player_play_wav(opt.output)) {
+            fprintf(stderr,
+                    "Warning: no audio player found or it failed; open %s "
+                    "with any player.\n",
+                    opt.output);
+            return 1;
+        }
+    }
     return 0;
 }
