@@ -1,0 +1,7 @@
+# RH:/LH: start a hand. '#' starts a comment.
+RH: C#5:q A4:e C#5:e E5:h | D5:q F#5:e E5:e D5:h |
+    C#5:q E5:e C#5:e A4:h | B4:q G#4:e B4:e E4:h |
+    A4+C#5+E5:w
+LH: F#2:e C#3:e A3:e C#3:e F#2:e C#3:e A3:e C#3:e |
+    D2:e A2:e F#3:e A2:e D2:e A2:e F#3:e A2:e |
+    E2:e B2:e G#3:e B2:e E2:e B2:e G#3:e B2:e | A1+A2:w
