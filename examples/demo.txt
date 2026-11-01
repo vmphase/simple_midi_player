@@ -1,7 +1,8 @@
-# RH:/LH: start a hand. '#' starts a comment.
-RH: C#5:q A4:e C#5:e E5:h | D5:q F#5:e E5:e D5:h |
-    C#5:q E5:e C#5:e A4:h | B4:q G#4:e B4:e E4:h |
-    A4+C#5+E5:w
-LH: F#2:e C#3:e A3:e C#3:e F#2:e C#3:e A3:e C#3:e |
-    D2:e A2:e F#3:e A2:e D2:e A2:e F#3:e A2:e |
-    E2:e B2:e G#3:e B2:e E2:e B2:e G#3:e B2:e | A1+A2:w
+# RH:/LH: start a hand, following lines continue it. '#' starts a comment.
+# Tempo (T), pause (^) and pedal (Pd/Pu/Pc) marks are global: use them in one hand only.
+RH: v78 C#5:q A4:e C#5:e E5:h | D5:q F#5:e E5:e D5:h |
+    C#5:q E5:e C#5:e A4:h | B4:q G#4:e B4:e E4+G#4+B4:h ^1.2 | A4+C#5+E5:w
+LH: v60 Pd F#2:e C#3:e A3:e C#3:e F#2:e C#3:e A3:e C#3:e |
+    Pc D2:e A2:e F#3:e A2:e D2:e A2:e F#3:e A2:e |
+    Pc A1:e E2:e C#3:e E2:e A1:e E2:e C#3:e E2:e |
+    T65~50:4 Pc E2:e B2:e G#3:e B2:e E2:e B2:e G#3:e B2:e | Pc A1+A2:w
